@@ -1,0 +1,42 @@
+[build-system]
+# Specifies the tools needed to build package.
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# Core metadata about this project.
+name = "smartchunk"
+version = "0.1.0"
+authors = [
+  {name = "Kazama"},
+  {name = "Shinchan"},
+  {name = "Masao"},
+]
+maintainers = [
+  {name = "Nanny"},
+]
+description = "Structure-aware semantic chunking for RAG/LLMs" # 
+readme = "README.md"
+license = { text = "MIT" }  
+requires-python = ">=3.10"  
+keywords = ["chunking", "rag", "llm", "semantic", "parser", "nlp"]
+
+# Classifiers help users find this project on PyPI.
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing",
+]
+
+# Project dependencies.
+dependencies = [ ]
+
+[project.urls]
+Homepage = "https://smartchunk.vercel.app"
+"Bug Tracker" = "https://github.com/Kai-972/Bo-Chan/issues" 
+
+[project.scripts]
+# This links the command 'smartchunk' to the 'main' function in the 'cli.py' file.
+smartchunk = "src.cli:main"
