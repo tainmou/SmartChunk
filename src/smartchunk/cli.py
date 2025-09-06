@@ -21,6 +21,7 @@ from rich.table import Table
 
 from .chunker import SmartChunker, NaiveChunker
 from . import parsers  # parse_markdown / parse_html / parse_text
+from .fetcher import fetch_article_text
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Ensure UTF-8 stdout on Windows (avoid mojibake/encode errors)
@@ -235,6 +236,26 @@ def stream(
         final_block = carry_text + "".join(buffer)
         emit(final_block, final=True)
         console.print(f"[yellow]Interrupted.[/yellow] Emitted {emitted} chunks.")
+
+@app.command()
+def fetch(
+    url: str = typer.Argument(..., help="URL of the article to fetch and chunk"),
+    max_chars: int = typer.Option(1200, help="Max characters per chunk"),
+):
+    """
+    Fetches content from a URL, chunks it, and saves the output.
+    """
+    console.print(f"📡 Fetching content from: [bold blue]{url}[/bold blue]")
+    
+    # This is the key step: call your new fetcher
+    text_content = fetch_article_text(url)
+    
+    if not text_content:
+        console.print("[bold red]Error:[/bold red] Could not retrieve content from the URL.")
+        raise typer.Exit(1)
+        
+    # Now, you just feed the fetched text into your existing chunker!
+    chunks = SmartChunker().chunk(text_content, max_chars=max_chars)
 
 
 def main() -> None:
