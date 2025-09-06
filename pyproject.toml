@@ -20,19 +20,18 @@ classifiers = [
 
 dependencies = [
   "rich>=13.7",
-  "typer>=0.12",
-  # optional:
-  # "tiktoken>=0.7"
+  "typer[all]>=0.12", # Using [all] for better optional features
+  "tiktoken>=0.7"     # Added tiktoken as it is a core dependency
 ]
 
 [project.scripts]
-smartchunk = "smartchunk.cli:main"
+# This now correctly points to the 'app' object in your cli.py
+smartchunk = "smartchunk.cli:app"
 
+# --- Configuration for setuptools to find your package in the 'src' directory ---
 [tool.setuptools]
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.pytest.ini_options]
-addopts = "-q"
