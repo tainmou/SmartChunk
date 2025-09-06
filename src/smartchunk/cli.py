@@ -100,6 +100,8 @@ def _print_output(chunks: List, fmt: str) -> None:
 # ──────────────────────────────────────────────
 # Batch mode
 # ──────────────────────────────────────────────
+# In cli.py, replace your existing chunk command with this one
+
 @app.command()
 def chunk(
     file: Path = typer.Argument(..., exists=True, readable=True, help="Input file"),
@@ -107,6 +109,8 @@ def chunk(
     max_tokens: Optional[int] = typer.Option(None, help="Max tokens per chunk (optional)"),
     max_chars: int = typer.Option(1200, help="Max characters per chunk"),
     overlap: int = typer.Option(120, help="Overlap in characters between chunks"),
+    semantic: bool = typer.Option(False, "--semantic", help="Enable semantic splitting on large text blocks."),
+    semantic_threshold: float = typer.Option(0.4, help="Similarity threshold for semantic splitting."),
     out_format: str = typer.Option("table", "--format", "-f", help="Output: table | json | jsonl"),
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Write output to file (UTF-8)"),
 ) -> None:
@@ -115,11 +119,15 @@ def chunk(
     raw_text = file.read_text(encoding="utf-8", errors="ignore")
     text = _normalize_text(raw_text, mode)
 
-    chunks = SmartChunker().chunk(
+    # Initialize the chunker once
+    chunker = SmartChunker()
+    chunks = chunker.chunk(
         text,
         max_tokens=max_tokens,
         max_chars=max_chars,
         overlap_chars=overlap,
+        semantic=semantic,
+        semantic_threshold=semantic_threshold,
     )
 
     if output:
