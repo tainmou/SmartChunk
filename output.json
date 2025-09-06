@@ -1,0 +1,51 @@
+[
+  {
+    "id": "c0001",
+    "text": "SmartChunk 🧩\nStructure-aware semantic chunking for RAG/LLMs.\n\nSmartChunk is a command-line tool that produces higher-quality chunks for RAG pipelines by respecting document structure and meaning. It stops your RAG system from cutting sentences, code blocks, and lists in half, leading to better retrieval quality and lower token costs.\n\nKey Features\n🧠 Structure-Aware Splitting: Understands Markdown, HTML, and plain-text structure. It never splits in the middle of a heading, list, table, or fenced code block.",
+    "header_path": "Document",
+    "start_line": 1,
+    "end_line": 7
+  },
+  {
+    "id": "c0002",
+    "text": "Markdown, HTML, and plain-text structure. It never splits in the middle of a heading, list, table, or fenced code block.\n\n✂️ Semantic Boundary Detection: Uses sentence embeddings to find natural \"low-similarity valleys\" between sentences, ensuring that splits happen at logical topic boundaries, not at arbitrary token counts.\n\n✨ Noise & Duplication Guard: Strips boilerplate content (like headers/footers), collapses near-duplicate paragraphs, and normalizes whitespace to produce clean, high-signal chunks.\n\nQuickstart\nGet started in under 60 seconds.\n1. Installation\nInstall the package directly from TestPyPI (during the hackathon). Make sure you are using Python 3.10+.",
+    "header_path": "Document",
+    "start_line": 8,
+    "end_line": 17
+  },
+  {
+    "id": "c0003",
+    "text": "1. Installation\nInstall the package directly from TestPyPI (during the hackathon). Make sure you are using Python 3.10+.\n\npip install -i [https://test.pypi.org/simple/](https://test.pypi.org/simple/) smartchunk\n2. Chunk a Document\nRun the chunk command to process a file and generate a JSONL output.\n\nsmartchunk chunk docs/README.md \\\n  --mode markdown \\\n  --max-tokens 700 \\\n  --dedupe \\\n  --out out/chunks.jsonl\n3. Compare with a Naive Splitter\nUse the compare command to generate an HTML report that visually shows the difference between SmartChunk and a standard token-based splitter.",
+    "header_path": "Document",
+    "start_line": 18,
+    "end_line": 31
+  },
+  {
+    "id": "c0004",
+    "text": "nd to generate an HTML report that visually shows the difference between SmartChunk and a standard token-based splitter.\n\nsmartchunk compare docs/README.md --mode markdown --out report.html\n\nExample Output\nThe output is a .jsonl file, where each line is a JSON object representing a single, coherent chunk.",
+    "header_path": "Document",
+    "start_line": 32,
+    "end_line": 36
+  },
+  {
+    "id": "c0005",
+    "text": "tml\n\nExample Output\nThe output is a .jsonl file, where each line is a JSON object representing a single, coherent chunk.\n\n{\n  \"doc_id\": \"readme-v1\",\n  \"chunk_id\": \"readme-v1-0007\",\n  \"text\": \"To install the package, run `pip install smartchunk`. This will add the `smartchunk` command to your path...\",\n  \"tokens\": 612,\n  \"start_char\": 12420,\n  \"end_char\": 15691,\n  \"heading_path\": [\"2. Getting Started\", \"2.1 Installation\"],\n  \"mode\": \"markdown\",\n  \"coherence_score\": 0.82\n}",
+    "header_path": "Document",
+    "start_line": 37,
+    "end_line": 48
+  },
+  {
+    "id": "c0006",
+    "text": ": 15691,\n  \"heading_path\": [\"2. Getting Started\", \"2.1 Installation\"],\n  \"mode\": \"markdown\",\n  \"coherence_score\": 0.82\n}\n\nCLI Usage\nchunk command\nusage: smartchunk chunk [-h] --mode {markdown,html,text} [--max-tokens MAX_TOKENS] [--overlap OVERLAP] [--min-sim MIN_SIM] [--dedupe] --out OUT FILE\n\nArguments:\n  FILE                  Path to the input file.",
+    "header_path": "Document",
+    "start_line": 49,
+    "end_line": 55
+  },
+  {
+    "id": "c0007",
+    "text": "erlap OVERLAP] [--min-sim MIN_SIM] [--dedupe] --out OUT FILE\n\nArguments:\n  FILE                  Path to the input file.\n\nOptions:\n  --mode                File type (markdown, html, text).\n  --max-tokens          Maximum number of tokens per chunk. (Default: 800)\n  --out                 Path to save the output JSONL file.\n  --dedupe              Enable near-duplicate paragraph removal.\n  ... and more\n\nLicense\nThis project is licensed under the MIT License. See the LICENSE file for details.",
+    "header_path": "Document",
+    "start_line": 56,
+    "end_line": 65
+  }
+]

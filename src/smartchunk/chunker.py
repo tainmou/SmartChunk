@@ -52,7 +52,6 @@ class SmartChunker:
 
     def _find_sections(self, lines: List[str]) -> List[tuple[str, tuple[int, int]]]:
         """Identifies header-based sections and their line spans."""
-        # ... (Your existing logic is good and remains unchanged)
         headers = []
         for i, line in enumerate(lines):
             m = _HEADER_RE.match(line)
@@ -74,7 +73,6 @@ class SmartChunker:
 
     def _segment(self, lines: List[str], start_offset: int) -> List[dict]:
         """Segments text based on structural boundaries like blank lines, lists, and code fences."""
-        # ... (Your existing logic is good and remains unchanged)
         segs: List[dict] = []
         buf: List[str] = []
         code = False
@@ -101,7 +99,6 @@ class SmartChunker:
 
     def _pack(self, segs: List[dict], max_tokens: Optional[int], max_chars: Optional[int]) -> Iterable[dict]:
         """Packs segments into chunks that respect the size budget."""
-        # ... (Your existing logic is good and remains unchanged)
         if not segs: return
         cur, start = [], segs[0]["start_line"]
         for seg in segs:
@@ -114,13 +111,17 @@ class SmartChunker:
         if cur:
             yield {"text": "\n".join(cur).strip(), "start_line": start, "end_line": segs[-1]["end_line"]}
 
+    # THIS METHOD IS NOW CORRECTLY INDENTED
     def _too_big(self, text: str, max_tokens: Optional[int], max_chars: int) -> bool:
-        """Checks if a text block exceeds the size budget."""
-        if max_tokens is not None and count_tokens(text) > max_tokens:
-            return True
-        if len(text) > max_chars:
-            return True
-        return False
+        """
+        Checks if a text block exceeds the size budget, prioritizing tokens.
+        """
+        if max_tokens is not None:
+            # If a token limit is set, ONLY use that for the decision.
+            return count_tokens(text) > max_tokens
+        else:
+            # Otherwise, fall back to the character limit.
+            return len(text) > max_chars
 
 
 class NaiveChunker:
