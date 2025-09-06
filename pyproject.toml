@@ -1,42 +1,38 @@
 [build-system]
-# Specifies the tools needed to build package.
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-# Core metadata about this project.
 name = "smartchunk"
 version = "0.1.0"
-authors = [
-  {name = "Kazama"},
-  {name = "Shinchan"},
-  {name = "Masao"},
-]
-maintainers = [
-  {name = "Nanny"},
-]
-description = "Structure-aware semantic chunking for RAG/LLMs" # 
+description = "Structure-aware semantic chunking for RAG/LLMs"
 readme = "README.md"
-license = { text = "MIT" }  
-requires-python = ">=3.10"  
-keywords = ["chunking", "rag", "llm", "semantic", "parser", "nlp"]
-
-# Classifiers help users find this project on PyPI.
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Team Metamorph" }]
+keywords = ["RAG","chunking","semantic","NLP","LLM"]
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "Topic :: Text Processing",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Topic :: Text Processing :: Linguistic",
 ]
 
-# Project dependencies.
-dependencies = [ ]
-
-[project.urls]
-Homepage = "https://smartchunk.vercel.app"
-"Bug Tracker" = "https://github.com/Kai-972/Bo-Chan/issues" 
+dependencies = [
+  "rich>=13.7",
+  "typer>=0.12",
+  # optional:
+  # "tiktoken>=0.7"
+]
 
 [project.scripts]
-# This links the command 'smartchunk' to the 'main' function in the 'cli.py' file.
-smartchunk = "src.cli:main"
+smartchunk = "smartchunk.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
