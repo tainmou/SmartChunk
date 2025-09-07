@@ -43,7 +43,7 @@ For hackathon/demo (TestPyPI):
 pip install -i https://test.pypi.org/simple/ smartchunk
 ```
 
-Once we publish it to PyPI:
+Once we'll publish it to PyPI:
 
 ```bash
 pip install smartchunk
