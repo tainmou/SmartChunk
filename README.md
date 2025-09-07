@@ -1,6 +1,6 @@
 # SmartChunk 🧩
 
-**Structure-aware semantic chunking for RAG/LLMs**
+**Structure-aware semantic chunking for RAG/LLMs (test.pypi.org/project/smartchunk/)**
 
 SmartChunk is a **Python package + CLI** that creates higher-quality chunks for Retrieval-Augmented Generation (RAG) pipelines. Instead of breaking text blindly, SmartChunk **respects structure and meaning** — no more chopped sentences, broken code blocks, or messy lists.
 
