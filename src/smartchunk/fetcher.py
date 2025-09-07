@@ -1,25 +1,63 @@
-# src/smartchunk/fetcher.py
 import requests
 from bs4 import BeautifulSoup
 
 def fetch_article_text(url: str) -> str:
-    """Fetches and extracts the main content from a URL."""
+    """
+    Fetches the main content of an article from a URL.
+
+    This function is designed to be robust. It will:
+    1. Identify itself with a clear User-Agent.
+    2. Attempt to find the main content using common HTML5 tags (<article>, <main>).
+    3. Fall back to a heuristic based on paragraph density to find the content.
+    4. Return the raw HTML of the main content block for further processing.
+    """
+    headers = {
+        'User-Agent': 'SmartChunk/1.0 (LanguageModelBot/1.0; +http://smartchunk.ai/bot)'
+    }
+    
     try:
-        response = requests.get(url)
-        response.raise_for_status()  # Raises an error for bad responses (404, 500)
-        
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # Find the main content of the page (this selector is an example)
-        # Often the main content is in a <main> tag or an <article> tag
-        main_content = soup.find('main') or soup.find('article')
-        
-        if main_content:
-            return main_content.get_text(separator='\n\n', strip=True)
-        else:
-            # Fallback if a clear main tag isn't found
-            return soup.body.get_text(separator='\n\n', strip=True)
-            
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
     except requests.RequestException as e:
-        print(f"Error fetching URL: {e}")
+        print(f"Error fetching URL {url}: {e}")
         return ""
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # --- Intelligent Content Extraction ---
+
+    # 1. Primary Method: Look for <article> or <main> tags
+    main_content = soup.find('article') or soup.find('main')
+
+    # 2. Fallback Method: Find the parent with the most <p> tags
+    if not main_content:
+        paragraphs = soup.find_all('p')
+        if not paragraphs:
+            # If no paragraphs, we can't use this heuristic.
+            # Return the whole body's text as a last resort.
+            body = soup.find('body')
+            if body:
+                return body.prettify() # Return the raw HTML for the parser to handle
+            return ""
+
+        # Find the parent that contains the most paragraphs
+        parent_map = {}
+        for p in paragraphs:
+            if p.parent not in parent_map:
+                parent_map[p.parent] = 0
+            parent_map[p.parent] += 1
+        
+        # Find the parent with the highest paragraph count
+        if parent_map:
+            main_content = max(parent_map, key=parent_map.get)
+
+    # 3. Final Resort
+    if not main_content:
+        body = soup.find('body')
+        if body:
+            return body.prettify()
+        return ""
+
+    # Return the raw HTML of the extracted main content block.
+    # Your existing HTML parser is already excellent at cleaning this up.
+    return main_content.prettify()

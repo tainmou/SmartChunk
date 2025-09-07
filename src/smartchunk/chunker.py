@@ -43,12 +43,12 @@ class SmartChunker:
             for pack in self._pack(segs, max_tokens, max_chars, semantic, semantic_threshold):
                 
                 text_block = pack["text"]
-                is_current_pack_code = pack.get("is_code", False)
-
-                # --- NEW, INTELLIGENT OVERLAP LOGIC ---
+                
+                # Intelligent Overlap Logic
                 if overlap_chars > 0 and chunks:
+                    is_current_pack_code = pack.get("is_code", False)
                     is_previous_chunk_code = chunks[-1].text.strip().startswith("```")
-                    # Only add overlap if NEITHER chunk is a code block and they share the same header path.
+
                     if not is_current_pack_code and not is_previous_chunk_code and chunks[-1].header_path == path:
                         overlap_text = chunks[-1].text[-overlap_chars:]
                         text_block = overlap_text.strip() + " ... " + text_block.strip()
@@ -99,12 +99,12 @@ class SmartChunker:
             is_fence = _CODE_FENCE_RE.match(line)
             
             if is_fence:
-                if code: # End of code block
+                if code:
                     buf.append(line)
                     flush(abs_i + 1)
                     buf = []
                     seg_start = abs_i + 1
-                else: # Start of code block
+                else:
                     flush(abs_i)
                     buf = [line]
                     seg_start = abs_i
@@ -135,7 +135,19 @@ class SmartChunker:
             return
             
         embeddings = self.model.encode(sentences, convert_to_tensor=True)
-        similarities = np.inner(embeddings[:-1], embeddings[1:])
+        
+        # Move embeddings to CPU before using with NumPy
+        cpu_embeddings = embeddings.cpu()
+
+        # --- THIS IS THE FINAL, CORRECT MATH ---
+        # Calculate the similarity between adjacent sentences
+        # Convert to numpy array before doing the calculation
+        cpu_embeddings_numpy = cpu_embeddings.numpy()
+        similarities = np.array([
+            np.inner(cpu_embeddings_numpy[i], cpu_embeddings_numpy[i+1])
+            for i in range(len(cpu_embeddings_numpy) - 1)
+        ])
+        # ----------------------------------------
         
         start_idx = 0
         for i, sim in enumerate(similarities):
@@ -175,7 +187,7 @@ class SmartChunker:
             current_pack_text = (current_pack_text + "\n\n" + seg["text"]).strip()
             current_pack_end = seg["end_line"]
             if seg.get("is_code"):
-                is_code_pack = True # Ensure the pack is marked as code if any segment is
+                is_code_pack = True
             
         if current_pack_text:
             yield {"text": current_pack_text, "start_line": current_pack_start, "end_line": current_pack_end, "is_code": is_code_pack}

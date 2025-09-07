@@ -63,3 +63,50 @@ Options:
 
 License
 This project is licensed under the MIT License. See the LICENSE file for details.
+
+(IN SIMPLE:-)
+SmartChunk 🧩
+An intelligent, structure-aware, and semantic-aware chunking tool for RAG pipelines.
+
+SmartChunk is an end-to-end command-line tool that transforms raw web content or local files into high-quality, AI-ready data chunks. It's designed to be the essential first step in any production-grade RAG pipeline.
+
+Key Features
+
+📡 End-to-End Pipeline: Go from a URL to structured, intelligent chunks with a single command.
+
+🧠 Structure-Aware Parsing: Understands HTML, Markdown, and text. It correctly parses document structure, preserving headers, code blocks, lists, and tables.
+
+✂️ Semantic Splitting: Uses sentence embeddings to find natural topic boundaries in large text blocks, ensuring chunks are thematically coherent.
+
+✨ Noise & Duplication Guard: Intelligently extracts the main content from web pages, discarding ads and boilerplate. The --dedupe flag removes near-duplicate chunks.
+
+⚙️ Tunable & Flexible: Fine-tune chunking with controls for size, overlap, and semantic sensitivity.
+
+Quickstart
+
+1. Installation
+
+pip install smartchunk
+
+(Once you've published to PyPI)
+
+2. Fetch and Chunk a URL
+Run the fetch command on any URL to see the full pipeline in action.
+
+smartchunk fetch "[https://en.wikipedia.org/wiki/Artificial_intelligence](https://en.wikipedia.org/wiki/Artificial_intelligence)" --semantic --dedupe --format table
+
+3. Chunk a Local File
+Process local HTML, Markdown, or text files with the same intelligent engine.
+
+smartchunk chunk my_document.md --mode markdown --max-tokens 500 --overlap 100
+
+4. Compare with a Naive Splitter
+See the dramatic difference between SmartChunk and a standard character-based splitter.
+
+smartchunk compare langchain/demo.html --mode html
+
+License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+

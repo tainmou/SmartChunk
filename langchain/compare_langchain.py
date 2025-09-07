@@ -1,45 +1,66 @@
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from pathlib import Path
+# ==============================================================================
+# compare_langchain.py (FINAL VERSION with URL support)
+#
+# Fetches content from a URL and runs a naive, character-based LangChain
+# splitter to demonstrate its weaknesses on live web content.
+# ==============================================================================
 
-# --- Configuration ---
-# We use a small chunk size to guarantee it will fail on the structured data.
-CHUNK_SIZE = 150
-CHUNK_OVERLAP = 20
-DEMO_FILE = "demo.html"
+import sys
+import requests
+from bs4 import BeautifulSoup
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-def run_langchain_chunker():
-    """
-    Reads the demo HTML file and chunks it using a naive LangChain splitter.
-    """
-    print("=" * 80)
-    print("🔬 Running Naive LangChain Chunker...")
-    print("=" * 80)
+CHUNK_SIZE = 500
+CHUNK_OVERLAP = 0
 
+def fetch_raw_html(url: str) -> str:
+    """Fetches the full raw HTML from a URL."""
     try:
-        file_path = Path(DEMO_FILE)
-        html_content = file_path.read_text(encoding="utf-8")
-    except FileNotFoundError:
-        print(f"\n[ERROR] The file '{DEMO_FILE}' was not found.")
-        print("Please make sure it is in the same directory as this script.")
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        return response.text
+    except requests.RequestException as e:
+        print(f"\n[ERROR] Failed to fetch URL: {e}")
+        return ""
+
+def run_langchain_comparison(url: str):
+    """Fetches and processes a URL with a naive chunker."""
+    print("=" * 80)
+    print(f"🔬 Running Naive LangChain Chunker on URL: {url}")
+    print("=" * 80)
+    
+    html_text = fetch_raw_html(url)
+    if not html_text:
         return
 
-    # This is LangChain's most common, "one-size-fits-all" splitter.
-    langchain_splitter = RecursiveCharacterTextSplitter(
+    # Use LangChain's basic character splitter
+    text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP,
         length_function=len,
     )
 
-    chunks = langchain_splitter.split_text(html_content)
+    chunks = text_splitter.create_documents([html_text])
 
-    print(f"\n[INFO] LangChain produced {len(chunks)} chunks.\n")
+    print(f"\n[INFO] LangChain produced {len(chunks)} messy chunks.\n")
 
-    for i, chunk in enumerate(chunks):
-        print(f"--- 💔🙈 LANGCHAIN CHUNK {i+1} (Size: {len(chunk)}) ---")
-        # Replace newlines for cleaner printing in the terminal
-        print(chunk.replace("\n", " "))
-        print("-" * (35 + len(str(i+1)) + len(str(len(chunk)))))
+    for i, chunk in enumerate(chunks[:5]): # Show first 5 messy chunks
+        print(f"--- 💔🙈 LANGCHAIN CHUNK {i+1} (Size: {len(chunk.page_content)}) ---")
+        print(chunk.page_content.replace('\n', ' ').strip())
+        print("-" * 40)
+    
+    if len(chunks) > 5:
+        print(f"\n... and {len(chunks) - 5} more messy chunks ...")
 
 
 if __name__ == "__main__":
-    run_langchain_chunker()
+    if len(sys.argv) > 1:
+        url_to_test = sys.argv[1]
+        run_langchain_comparison(url_to_test)
+    else:
+        print("\n[ERROR] Please provide a URL as a command-line argument.")
+        print("Example: python compare_langchain.py \"https://en.wikipedia.org/wiki/Artificial_intelligence\"")
+
+    
+

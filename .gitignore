@@ -36,3 +36,5 @@ htmlcov/
 # Output files from running the tool
 *.jsonl
 *.html
+
+langchain/output.json
