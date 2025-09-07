@@ -22,10 +22,10 @@ pip install -i [https://test.pypi.org/simple/](https://test.pypi.org/simple/) sm
 Run the chunk command to process a file and generate a JSONL output.
 
 smartchunk chunk docs/README.md \
-  --mode markdown \
-  --max-tokens 700 \
-  --dedupe \
-  --out out/chunks.jsonl
+   fetch     Fetch, parse, and chunk content directly from a URL in one go.                                                                                                       │
+│ chunk     Chunk a local file and print/save chunks.                                                                                                                            │
+│ compare   Compare SmartChunker with a naive fixed-size chunker.                                                                                                                │
+│ stream    Stream chunks from STDIN in near-real-time.                                                                                                                          
 
 3. Compare with a Naive Splitter
 Use the compare command to generate an HTML report that visually shows the difference between SmartChunk and a standard token-based splitter.
@@ -64,7 +64,7 @@ Options:
 License
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-(IN SIMPLE:-)
+# (IN SIMPLE:-)
 SmartChunk 🧩
 An intelligent, structure-aware, and semantic-aware chunking tool for RAG pipelines.
 
