@@ -89,16 +89,15 @@ Each line in the `.jsonl` output is a coherent chunk with rich metadata:
 
 ```json
 {
-  "doc_id": "readme-v1",
-  "chunk_id": "readme-v1-0007",
-  "text": "To install the package, run `pip install smartchunk`...",
-  "tokens": 612,
-  "start_char": 12420,
-  "end_char": 15691,
-  "heading_path": ["2. Getting Started", "2.1 Installation"],
-  "mode": "markdown",
-  "coherence_score": 0.82
-}
+    "id": "c0033",
+    "text": "###### Opening\n\n \n        [\n\n \n         edit\n\n \n        ]\n\n* Footage from Japanese opening 8 (\"PLEASURE\") but with 
+completely different lyrics, to the melody of a techno remix of Japanese opening 3 (\"Ora wa Ninkimono\").Musical Director, Producer and 
+English Director: World Worm Studios composerGary Gibbons",
+    "header_path": "Media / Anime / Music / LUK Internacional dub / Opening",
+    "start_line": 709,
+    "end_line": 727
+  },
+
 ```
 
 ---
