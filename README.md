@@ -67,7 +67,7 @@ smartchunk chunk docs/README.md \
 ### 3. Fetch & Chunk a URL
 
 ```bash
-smartchunk fetch "https://en.wikipedia.org/wiki/Artificial_intelligence" \
+smartchunk fetch "https://en.wikipedia.org/wiki/Crayon_Shin-chan" \
   --semantic --dedupe --format table
 ```
 
