@@ -1,44 +1,97 @@
-SmartChunk 🧩
-Structure-aware semantic chunking for RAG/LLMs.
+# SmartChunk 🧩
 
-SmartChunk is a command-line tool that produces higher-quality chunks for RAG pipelines by respecting document structure and meaning. It stops your RAG system from cutting sentences, code blocks, and lists in half, leading to better retrieval quality and lower token costs.
+**Structure-aware semantic chunking for RAG/LLMs**
 
-Key Features
-🧠 Structure-Aware Splitting: Understands Markdown, HTML, and plain-text structure. It never splits in the middle of a heading, list, table, or fenced code block.
+SmartChunk is a **Python package + CLI** that creates higher-quality chunks for Retrieval-Augmented Generation (RAG) pipelines. Instead of breaking text blindly, SmartChunk **respects structure and meaning** — no more chopped sentences, broken code blocks, or messy lists.
 
-✂️ Semantic Boundary Detection: Uses sentence embeddings to find natural "low-similarity valleys" between sentences, ensuring that splits happen at logical topic boundaries, not at arbitrary token counts.
+The result?
+👉 Better retrieval quality
+👉 Lower token costs
+👉 Chunks your LLM can actually understand
 
-✨ Noise & Duplication Guard: Strips boilerplate content (like headers/footers), collapses near-duplicate paragraphs, and normalizes whitespace to produce clean, high-signal chunks.
+---
 
-Quickstart
-Get started in under 60 seconds.
+## ✨ Why SmartChunk?
 
-1. Installation
-Install the package directly from TestPyPI (during the hackathon). Make sure you are using Python 3.10+.
+Naive splitters cut text every N tokens. That causes:
 
-pip install -i [https://test.pypi.org/simple/](https://test.pypi.org/simple/) smartchunk
+* ❌ Broken headings, lists, or tables
+* ❌ Incoherent fragments across paragraphs
+* ❌ Duplicate/boilerplate content bloating your index
 
-2. Chunk a Document
-Run the chunk command to process a file and generate a JSONL output.
+**SmartChunk fixes this** by combining structure awareness + semantic similarity.
 
+---
+
+## 🧠 Key Features
+
+* **Structure-Aware Splitting**: Never slices through a heading, list, table, or fenced code block.
+* **Semantic Boundary Detection**: Uses embeddings to find natural breakpoints between topics.
+* **Noise & Duplication Guard**: Strips headers/footers, removes near-duplicates, normalizes whitespace.
+* **Flexible & Tunable**: Control chunk size, overlap, and semantic sensitivity to fit your pipeline.
+* **End-to-End Ready**: From URL → parsed → deduped → JSONL chunks in one command.
+
+---
+
+## ⚡ Quickstart
+
+### 1. Install
+
+For hackathon/demo (TestPyPI):
+
+```bash
+pip install -i https://test.pypi.org/simple/ smartchunk
+```
+
+Once published to PyPI:
+
+```bash
+pip install smartchunk
+```
+
+---
+
+### 2. Chunk a Document
+
+```bash
 smartchunk chunk docs/README.md \
-   fetch     Fetch, parse, and chunk content directly from a URL in one go.                                                                                                       │
-│ chunk     Chunk a local file and print/save chunks.                                                                                                                            │
-│ compare   Compare SmartChunker with a naive fixed-size chunker.                                                                                                                │
-│ stream    Stream chunks from STDIN in near-real-time.                                                                                                                          
+  --mode markdown \
+  --max-tokens 500 \
+  --overlap 100 \
+  --dedupe \
+  --out chunks.jsonl
+```
 
-3. Compare with a Naive Splitter
-Use the compare command to generate an HTML report that visually shows the difference between SmartChunk and a standard token-based splitter.
+---
 
+### 3. Fetch & Chunk a URL
+
+```bash
+smartchunk fetch "https://en.wikipedia.org/wiki/Artificial_intelligence" \
+  --semantic --dedupe --format table
+```
+
+---
+
+### 4. Compare with a Naive Splitter
+
+```bash
 smartchunk compare docs/README.md --mode markdown --out report.html
+```
 
-Example Output
-The output is a .jsonl file, where each line is a JSON object representing a single, coherent chunk.
+Generates an **HTML report** showing naive vs SmartChunk side-by-side.
 
+---
+
+## 📦 Example Output
+
+Each line in the `.jsonl` output is a coherent chunk with rich metadata:
+
+```json
 {
   "doc_id": "readme-v1",
   "chunk_id": "readme-v1-0007",
-  "text": "To install the package, run `pip install smartchunk`. This will add the `smartchunk` command to your path...",
+  "text": "To install the package, run `pip install smartchunk`...",
   "tokens": 612,
   "start_char": 12420,
   "end_char": 15691,
@@ -46,67 +99,28 @@ The output is a .jsonl file, where each line is a JSON object representing a sin
   "mode": "markdown",
   "coherence_score": 0.82
 }
+```
 
-CLI Usage
-chunk command
-usage: smartchunk chunk [-h] --mode {markdown,html,text} [--max-tokens MAX_TOKENS] [--overlap OVERLAP] [--min-sim MIN_SIM] [--dedupe] --out OUT FILE
+---
 
-Arguments:
-  FILE                  Path to the input file.
+## 💻 CLI Overview
 
-Options:
-  --mode                File type (markdown, html, text).
-  --max-tokens          Maximum number of tokens per chunk. (Default: 800)
-  --out                 Path to save the output JSONL file.
-  --dedupe              Enable near-duplicate paragraph removal.
-  ... and more
+* `fetch` → Fetch, parse & chunk a URL in one go
+* `chunk` → Chunk a local file
+* `compare` → Compare SmartChunk vs naive splitter (HTML report)
+* `stream` → Stream chunks from STDIN in real-time
 
-License
-This project is licensed under the MIT License. See the LICENSE file for details.
+Run `smartchunk --help` for full options.
 
-# (IN SIMPLE:-)
-SmartChunk 🧩
-An intelligent, structure-aware, and semantic-aware chunking tool for RAG pipelines.
+---
 
-SmartChunk is an end-to-end command-line tool that transforms raw web content or local files into high-quality, AI-ready data chunks. It's designed to be the essential first step in any production-grade RAG pipeline.
+## 🔑 License
 
-Key Features
+MIT License. Free to use, modify, and share.
 
-📡 End-to-End Pipeline: Go from a URL to structured, intelligent chunks with a single command.
+---
 
-🧠 Structure-Aware Parsing: Understands HTML, Markdown, and text. It correctly parses document structure, preserving headers, code blocks, lists, and tables.
+## (In Simple Words) 📝
 
-✂️ Semantic Splitting: Uses sentence embeddings to find natural topic boundaries in large text blocks, ensuring chunks are thematically coherent.
-
-✨ Noise & Duplication Guard: Intelligently extracts the main content from web pages, discarding ads and boilerplate. The --dedupe flag removes near-duplicate chunks.
-
-⚙️ Tunable & Flexible: Fine-tune chunking with controls for size, overlap, and semantic sensitivity.
-
-Quickstart
-
-1. Installation
-
-pip install smartchunk
-
-(Once you've published to PyPI)
-
-2. Fetch and Chunk a URL
-Run the fetch command on any URL to see the full pipeline in action.
-
-smartchunk fetch "[https://en.wikipedia.org/wiki/Artificial_intelligence](https://en.wikipedia.org/wiki/Artificial_intelligence)" --semantic --dedupe --format table
-
-3. Chunk a Local File
-Process local HTML, Markdown, or text files with the same intelligent engine.
-
-smartchunk chunk my_document.md --mode markdown --max-tokens 500 --overlap 100
-
-4. Compare with a Naive Splitter
-See the dramatic difference between SmartChunk and a standard character-based splitter.
-
-smartchunk compare langchain/demo.html --mode html
-
-License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-
+SmartChunk = **“Don’t let your RAG cut sentences in half.”**
+It’s the **first step** for any production-grade RAG pipeline: clean, coherent, AI-ready chunks.
