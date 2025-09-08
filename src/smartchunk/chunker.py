@@ -8,7 +8,13 @@ import itertools
 from typing import Iterable, List, Optional
 
 import numpy as np
-from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+# sentence-transformers is an optional dependency used only for semantic splitting.
+# Import lazily so basic chunking works without the package installed.
+try:  # pragma: no cover - import handling
+    from sentence_transformers import SentenceTransformer
+except ImportError:  # pragma: no cover - handled gracefully at runtime
+    SentenceTransformer = None  # type: ignore
 
 from .utils import Chunk, count_tokens
 
@@ -49,7 +55,11 @@ class SmartChunker:
                     is_current_pack_code = pack.get("is_code", False)
                     is_previous_chunk_code = chunks[-1].text.strip().startswith("```")
 
-                    if not is_current_pack_code and not is_previous_chunk_code and chunks[-1].header_path == path:
+                    same_section = (
+                        chunks[-1].header_path == path or
+                        path.startswith(chunks[-1].header_path)
+                    )
+                    if not is_current_pack_code and not is_previous_chunk_code and same_section:
                         overlap_text = chunks[-1].text[-overlap_chars:]
                         text_block = overlap_text.strip() + " ... " + text_block.strip()
                 
@@ -127,6 +137,8 @@ class SmartChunker:
             return
 
         if self.model is None:
+            if SentenceTransformer is None:
+                raise ImportError("sentence_transformers is required for semantic splitting")
             self.model = SentenceTransformer(self._semantic_model_name)
 
         sentences = [s.strip() for s in _SENTENCE_END_RE.split(text) if s.strip()]
@@ -143,10 +155,14 @@ class SmartChunker:
         # Calculate the similarity between adjacent sentences
         # Convert to numpy array before doing the calculation
         cpu_embeddings_numpy = cpu_embeddings.numpy()
-        similarities = np.array([
-            np.inner(cpu_embeddings_numpy[i], cpu_embeddings_numpy[i+1])
-            for i in range(len(cpu_embeddings_numpy) - 1)
-        ])
+
+        # Compute cosine similarity between adjacent sentence embeddings
+        similarities = np.diag(
+            cosine_similarity(
+                cpu_embeddings_numpy[:-1],
+                cpu_embeddings_numpy[1:]
+            )
+        )
         # ----------------------------------------
         
         start_idx = 0
