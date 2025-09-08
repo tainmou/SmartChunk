@@ -31,7 +31,7 @@ class SmartChunker:
     It identifies structural boundaries and can perform semantic splitting
     on large text blocks to maintain thematic consistency.
     """
-    def __init__(self, semantic_model_name: str = 'all-MiniLM-L6-v2'):
+    def __init__(self, semantic_model_name: str = 'all-MiniLM-L6-v2') -> None:
         """Initializes the chunker, loading the semantic model if needed."""
         self.model = None
         self._semantic_model_name = semantic_model_name
@@ -100,7 +100,7 @@ class SmartChunker:
         code = False
         seg_start = start_offset
 
-        def flush(end_line: int):
+        def flush(end_line: int) -> None:
             if text := "\n".join(buf).rstrip():
                 segs.append({"text": text, "start_line": seg_start + 1, "end_line": end_line, "is_code": code})
 
