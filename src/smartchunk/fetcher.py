@@ -1,5 +1,9 @@
+import logging
+
 import requests
 from bs4 import BeautifulSoup
+
+logger = logging.getLogger(__name__)
 
 def fetch_article_text(url: str) -> str:
     """
@@ -19,7 +23,7 @@ def fetch_article_text(url: str) -> str:
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
     except requests.RequestException as e:
-        print(f"Error fetching URL {url}: {e}")
+        logger.error("Error fetching URL %s: %s", url, e)
         return ""
 
     soup = BeautifulSoup(response.text, 'html.parser')
