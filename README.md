@@ -29,7 +29,7 @@ Naive splitters cut text every N tokens. That causes:
 * **Semantic Boundary Detection**: Uses embeddings to find natural breakpoints between topics.
 * **Noise & Duplication Guard**: Strips headers/footers, removes near-duplicates, normalizes whitespace.
 * **Flexible & Tunable**: Control chunk size, overlap, and semantic sensitivity to fit your pipeline.
-* **End-to-End Ready**: From URL → parsed → deduped → JSONL chunks in one command.
+* **End-to-End Ready**: From URL → parsed → cleaned → JSONL chunks in one command.
 
 ---
 
@@ -54,12 +54,14 @@ pip install smartchunk
 ### 2. Chunk a Document
 
 ```bash
-smartchunk chunk docs/README.md \
+smartchunk chunk README.md \
   --mode markdown \
   --max-tokens 500 \
   --overlap 100 \
-  --dedupe \
-  --out chunks.jsonl
+  --semantic \
+  --semantic-model all-MiniLM-L6-v2 \
+  --format jsonl \
+  --output chunks.jsonl
 ```
 
 ---
@@ -68,7 +70,9 @@ smartchunk chunk docs/README.md \
 
 ```bash
 smartchunk fetch "https://en.wikipedia.org/wiki/Crayon_Shin-chan" \
-  --semantic --dedupe --format table
+  --semantic \
+  --semantic-model all-MiniLM-L6-v2 \
+  --format table
 ```
 
 ---
@@ -76,10 +80,10 @@ smartchunk fetch "https://en.wikipedia.org/wiki/Crayon_Shin-chan" \
 ### 4. Compare with a Naive Splitter
 
 ```bash
-smartchunk compare docs/README.md --mode markdown --out report.html
+smartchunk compare README.md --mode markdown --max-chars 800
 ```
 
-Generates an **HTML report** showing naive vs SmartChunk side-by-side.
+Prints a **terminal table** comparing naive vs SmartChunk side-by-side.
 
 ---
 
