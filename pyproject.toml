@@ -21,7 +21,6 @@ classifiers = [
 dependencies = [
   "rich>=13.7",
   "typer[all]>=0.12", # Using [all] for better optional features
-  "tiktoken>=0.7",     # Added tiktoken as it is a core dependency
   "markdown-it-py>=3.0",
   "beautifulsoup4>=4.12",
   "requests>=2.26",
@@ -30,6 +29,9 @@ dependencies = [
   "shellingham>=1.5",
   "sentence-transformers>=2.7",
 ]
+
+[project.optional-dependencies]
+tokenizer = ["tiktoken>=0.7"]
 
 [project.scripts]
 # This now correctly points to the 'app' object in your cli.py

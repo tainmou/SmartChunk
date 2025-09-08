@@ -1,9 +1,23 @@
 import logging
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
+
+# Configure a requests Session with retry capability for transient errors
+session = requests.Session()
+retries = Retry(
+    total=3,
+    backoff_factor=0.5,
+    status_forcelist=[408, 429, 500, 502, 503, 504],
+    allowed_methods=["HEAD", "GET", "OPTIONS"],
+)
+adapter = HTTPAdapter(max_retries=retries)
+session.mount("http://", adapter)
+session.mount("https://", adapter)
 
 def fetch_article_text(url: str) -> str:
     """
@@ -20,7 +34,7 @@ def fetch_article_text(url: str) -> str:
     }
     
     try:
-        response = requests.get(url, headers=headers, timeout=10)
+        response = session.get(url, headers=headers, timeout=10)
         response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
     except requests.RequestException as e:
         logger.error("Error fetching URL %s: %s", url, e)
