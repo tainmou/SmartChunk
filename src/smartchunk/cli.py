@@ -87,6 +87,11 @@ def fetch(
     overlap: int = typer.Option(120, help="Overlap in characters between chunks"),
     semantic: bool = typer.Option(False, "--semantic", help="Enable semantic splitting."),
     semantic_threshold: float = typer.Option(0.4, help="Similarity threshold for semantic splitting."),
+    semantic_model: str = typer.Option(
+        "all-MiniLM-L6-v2",
+        "--semantic-model",
+        help="SentenceTransformer model to use for semantic splitting.",
+    ),
     out_format: str = typer.Option("table", "--format", "-f", help="Output: table | json | jsonl"),
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Write output to file (UTF-8)"),
 ) -> None:
@@ -103,7 +108,8 @@ def fetch(
     text = _normalize_text(html_content, mode="html")
 
     console.print("🧠 Chunking content with SmartChunk AI...")
-    chunks = SmartChunker().chunk(
+    chunker = SmartChunker(semantic_model_name=semantic_model)
+    chunks = chunker.chunk(
         text,
         max_tokens=max_tokens,
         max_chars=max_chars,
@@ -131,6 +137,11 @@ def chunk(
     overlap: int = typer.Option(120, help="Overlap in characters between chunks"),
     semantic: bool = typer.Option(False, "--semantic", help="Enable semantic splitting."),
     semantic_threshold: float = typer.Option(0.4, help="Similarity threshold for semantic splitting."),
+    semantic_model: str = typer.Option(
+        "all-MiniLM-L6-v2",
+        "--semantic-model",
+        help="SentenceTransformer model to use for semantic splitting.",
+    ),
     out_format: str = typer.Option("table", "--format", "-f", help="Output: table | json | jsonl"),
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Write output to file (UTF-8)"),
 ) -> None:
@@ -138,7 +149,15 @@ def chunk(
     console.print(f"✨ Processing: [bold cyan]{file.name}[/bold cyan] (mode={mode})")
     raw_text = file.read_text(encoding="utf-8", errors="ignore")
     text = _normalize_text(raw_text, mode)
-    chunks = SmartChunker().chunk(text, max_tokens=max_tokens, max_chars=max_chars, overlap_chars=overlap, semantic=semantic, semantic_threshold=semantic_threshold)
+    chunker = SmartChunker(semantic_model_name=semantic_model)
+    chunks = chunker.chunk(
+        text,
+        max_tokens=max_tokens,
+        max_chars=max_chars,
+        overlap_chars=overlap,
+        semantic=semantic,
+        semantic_threshold=semantic_threshold,
+    )
     if output: _write_output(output, chunks, out_format)
     else: _print_output(chunks, out_format)
 
@@ -168,6 +187,11 @@ def stream(
     overlap: int = typer.Option(100, help="Overlap in characters"),
     semantic: bool = typer.Option(False, "--semantic", help="Enable semantic splitting."),
     semantic_threshold: float = typer.Option(0.4, help="Similarity threshold for semantic splitting."),
+    semantic_model: str = typer.Option(
+        "all-MiniLM-L6-v2",
+        "--semantic-model",
+        help="SentenceTransformer model to use for semantic splitting.",
+    ),
     out_format: str = typer.Option("jsonl", "--format", "-f", help="Output: jsonl | table"),
     flush_factor: float = typer.Option(1.5, help="Emit when buffer ≥ max_chars * factor"),
 ) -> None:
@@ -176,7 +200,7 @@ def stream(
     buffer: list[str] = []
     carry_text = ""
     emitted = 0
-    chunker = SmartChunker()
+    chunker = SmartChunker(semantic_model_name=semantic_model)
     def emit(text_block: str, final: bool = False) -> None:
         nonlocal emitted, carry_text
         if not text_block.strip(): return
