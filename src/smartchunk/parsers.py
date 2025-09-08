@@ -18,7 +18,7 @@ def parse_html(html_content: str) -> str:
     # --- In-Place Transformations on the Soup Object ---
 
     # Decompose (remove) all tags that are not useful for text content, like styles and scripts.
-    for tag in soup.find_all(['script', 'style', 'nav', 'header']):
+    for tag in soup.find_all(['script', 'style', 'nav', 'header', 'footer', 'aside']):
         tag.decompose()
 
     # Convert header tags to Markdown header syntax
