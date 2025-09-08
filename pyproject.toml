@@ -33,6 +33,11 @@ dependencies = [
 [project.optional-dependencies]
 tokenizer = ["tiktoken>=0.7"]
 
+[project.urls]
+Homepage = "https://github.com/TeamMetamorph/SmartChunk"
+Source = "https://github.com/TeamMetamorph/SmartChunk"
+Issues = "https://github.com/TeamMetamorph/SmartChunk/issues"
+
 [project.scripts]
 # This now correctly points to the 'app' object in your cli.py
 smartchunk = "smartchunk.cli:app"
