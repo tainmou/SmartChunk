@@ -116,6 +116,12 @@ Run `smartchunk --help` for full options.
 
 ---
 
+## 🤝 Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. By participating, you agree to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+---
+
 ## 🔑 License
 
 MIT License. Free to use, modify, and share.
