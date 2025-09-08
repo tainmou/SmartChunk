@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import logging
 from pathlib import Path
 from typing import Optional, List
 
@@ -37,6 +38,17 @@ app = typer.Typer(
     add_completion=False,
 )
 console = Console()
+
+
+@app.callback()
+def main(
+    log_level: str = typer.Option(
+        "INFO",
+        "--log-level",
+        help="Log level (e.g. DEBUG, INFO, WARNING, ERROR)",
+    ),
+) -> None:
+    logging.basicConfig(level=getattr(logging, log_level.upper(), logging.INFO))
 
 def _normalize_text(raw_text: str, mode: str) -> str:
     mode = (mode or "markdown").lower()
