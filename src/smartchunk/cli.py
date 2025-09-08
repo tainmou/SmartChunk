@@ -16,6 +16,8 @@ import logging
 from pathlib import Path
 from typing import Optional, List
 
+from .utils import Chunk
+
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -58,7 +60,7 @@ def _normalize_text(raw_text: str, mode: str) -> str:
         return parsers.parse_text(raw_text)
     return parsers.parse_markdown(raw_text)
 
-def _write_output(output_file: Path, chunks: List, fmt: str) -> None:
+def _write_output(output_file: Path, chunks: List[Chunk], fmt: str) -> None:
     fmt = fmt.lower()
     if fmt == "jsonl":
         lines = [json.dumps(c.__dict__, ensure_ascii=False) for c in chunks]
@@ -71,7 +73,7 @@ def _write_output(output_file: Path, chunks: List, fmt: str) -> None:
     output_file.write_text(payload, encoding="utf-8")
     console.print(f"✅ Saved [bold]{len(chunks)}[/bold] chunks → [green]{output_file}[/green]")
 
-def _print_output(chunks: List, fmt: str) -> None:
+def _print_output(chunks: List[Chunk], fmt: str) -> None:
     fmt = fmt.lower()
     if fmt == "jsonl":
         for c in chunks: console.print(json.dumps(c.__dict__, ensure_ascii=False))
